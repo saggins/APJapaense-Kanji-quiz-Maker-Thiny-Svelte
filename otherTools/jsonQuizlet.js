@@ -5,6 +5,7 @@ async function makeJSON(url, path) {
   const { v1: uuidv1, } = require('uuid');
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
+  await page.setDefaultNavigationTimeout(0);
   await page.goto(url);
   await page.waitForSelector('.TermText');
 
@@ -16,17 +17,18 @@ async function makeJSON(url, path) {
     let cardobj = {
       "id" : uuidv1(),
       "kanji": kanji,
-      "hirigana": hirigana
+      "hirigana": hirigana,
     }
     cardArray.push(cardobj)
     i++
   }
+  await browser.close();
+
   json = JSON.stringify({"list": cardArray})
   fs.writeFile(path, json, 'utf-8', function (err) {
     if (err) throw err;
     console.log('complete');
   })
-  await browser.close();
 
 }
 
